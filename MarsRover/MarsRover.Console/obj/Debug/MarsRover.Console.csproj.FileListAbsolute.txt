@@ -1,0 +1,6 @@
+D:\PROJELERIM\SOURCECONTROL\GIT\MarsRover\MarsRover\MarsRover.Console\bin\Debug\MarsRover.Console.exe.config
+D:\PROJELERIM\SOURCECONTROL\GIT\MarsRover\MarsRover\MarsRover.Console\bin\Debug\MarsRover.Console.exe
+D:\PROJELERIM\SOURCECONTROL\GIT\MarsRover\MarsRover\MarsRover.Console\bin\Debug\MarsRover.Console.pdb
+D:\PROJELERIM\SOURCECONTROL\GIT\MarsRover\MarsRover\MarsRover.Console\obj\Debug\MarsRover.Console.csproj.CoreCompileInputs.cache
+D:\PROJELERIM\SOURCECONTROL\GIT\MarsRover\MarsRover\MarsRover.Console\obj\Debug\MarsRover.Console.exe
+D:\PROJELERIM\SOURCECONTROL\GIT\MarsRover\MarsRover\MarsRover.Console\obj\Debug\MarsRover.Console.pdb
