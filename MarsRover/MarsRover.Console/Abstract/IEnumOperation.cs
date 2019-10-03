@@ -8,8 +8,8 @@ namespace MarsRover.Console.Abstract
 {
     public interface IEnumOperation
     {
-        T GetValueFromDescription<T>(string value);
-        int GetEnumItemCount<T>();
-        string GetEnumDescription<T>(Enum value);
+        T GetEnumFromDescription<T>(string description) where T : Enum;
+        int GetEnumItemsCount<T>();
+        string GetEnumDescription<T>(Enum item) where T : Enum;
     }
 }

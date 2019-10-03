@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MarsRover.Console.Const;
@@ -15,7 +16,7 @@ namespace MarsRover.Console
 
         static readonly RoverOperation RoverOperation = new RoverOperation();
         static readonly EnumOperation EnumOperation = new EnumOperation();
-        static Rover _rover = new Rover();
+        static readonly Rover Rover = new Rover();
         static List<int> _positionMaxValues = new List<int>();
         static List<string> _positionValues = new List<string>();
 
@@ -29,10 +30,10 @@ namespace MarsRover.Console
         public static void StepOne()
         {
             System.Console.WriteLine();
-               System.Console.WriteLine($"Max position degerlerini girin X-Y");
+            System.Console.WriteLine($"Max position degerlerini girin X-Y");
             var maxDigits = GetMaxPositionRead();
             if (maxDigits.Count == 2)
-                _positionMaxValues = maxDigits; StepTwo();
+            {  _positionMaxValues = maxDigits; StepTwo();}
             StepOne();
         }
         private static void StepTwo()
@@ -41,28 +42,27 @@ namespace MarsRover.Console
             System.Console.WriteLine($"Lütfen hareket değerlerini girin X-Y-Z");
             var stepValues = GetRetrieveEnteredData();
             if (stepValues.Count == 3)
-                _positionValues = stepValues; StepThree();
+            {    _positionValues = stepValues; StepThree(stepValues);}
             StepTwo();
         }
-        private static void StepThree()
+        private static void StepThree(List<string> temporyPositionValues)
         {
-            var positionRetunValu = RoverOperation.IstPositionValuesCorrect(_positionValues);
+            var positionRetunValu = RoverOperation.IsPositionValuesCorrect(temporyPositionValues);
             if (positionRetunValu.IsCorrect)
             {
-                // sayı kontrolü yapıldığına göre diziyi parcalayarak x-y-ve yön olarak  değerleri atayabiliriz.
-                _rover.PositionX = Convert.ToInt32(_positionValues[0]);
-                _rover.PositionY = Convert.ToInt32(_positionValues[1]);
                 // yön için pozition kontrolü yapıcaz enum
                 try
                 {
-                    var rotateValue = EnumOperation.GetValueFromDescription<Compass.Direction>(_positionValues[2]);
-                    _rover.RoverDirection = rotateValue;
+                    var rotateValue = EnumOperation.GetEnumFromDescription<Compass.Direction>(_positionValues[2]);
+                    Rover.RoverDirection = rotateValue;
+                    Rover.PositionX = Convert.ToInt32(_positionValues[0]);
+                    Rover.PositionY = Convert.ToInt32(_positionValues[1]);
                     StepFour();
                 }
                 catch (InvalidOperationException)
                 {
                     System.Console.WriteLine();
-                    System.Console.WriteLine($"Girilen yön hatalı !  {_positionValues[2].ToString() } tipinde bir yön bulunmamaktadır");
+                    System.Console.WriteLine($"Girilen yön hatalı !  {_positionValues[2].ToString() } tipinde bir yön bulunmamaktadır. ");
                     StepTwo();
                 }
             }
@@ -70,7 +70,7 @@ namespace MarsRover.Console
             {
                 System.Console.WriteLine();
                 System.Console.WriteLine(positionRetunValu.ReturnMessage);
-                StepOne();
+                StepTwo();
             }
         }
         private static void StepFour()
@@ -82,23 +82,52 @@ namespace MarsRover.Console
 
             try
             {
-                Rover lasRoverValues = RoverOperation.Motion(_rover, _positionMaxValues, orientationValues);
-                System.Console.WriteLine();
-                System.Console.WriteLine($"Rover is last Position X-Y-Z :" +
-                                         $"{lasRoverValues.PositionX.ToString()}-" +
-                                         $"{lasRoverValues.PositionY.ToString()}-" +
-                                         $"{EnumOperation.GetEnumDescription<Direction>(lasRoverValues.RoverDirection)}");
-                //  işlem basarı ile bitince tekrar step1 diyip basa dönüyoruz
-                StepOne();
+                Rover lastRoverValues = RoverOperation.Motion(Rover, _positionMaxValues, orientationValues);
+                if (lastRoverValues == null)
+                {
+                    IsStepChoiceAnswer();
+                    // StepTwo();
+                }
+                else
+                {
+                    System.Console.WriteLine();
+                    System.Console.WriteLine($"Rover is last Position X-Y-Z :" +
+                                             $"{lastRoverValues.PositionX.ToString()}-" +
+                                             $"{lastRoverValues.PositionY.ToString()}-" +
+                                             $"{EnumOperation.GetEnumDescription<Direction>(lastRoverValues.RoverDirection)}");
+                    //  işlem basarı ile bitince soruyoruz?
+                    IsStepChoiceAnswer();
+                }
+                //StepTwo();
             }
             catch (Exception)
             {
                 System.Console.WriteLine();
-                System.Console.WriteLine($"Bir hata oluştu ");
+                System.Console.WriteLine($"Hatalı giriş ");
                 StepFour();
             }
         }
         #endregion
+
+
+        public static void IsStepChoiceAnswer()
+        {
+            System.Console.WriteLine($"Max boyutu değiştirmek için 1, yeni konum bilgisi girmek için 2 ye çıkmak için 0 ı tuşlayınız :)");
+            dynamic choice = System.Console.ReadLine()?.Trim(' ').ToUpper();
+            if (RoverOperation.IsCharacterCorrect(Convert.ToChar(choice), true))
+            {
+                choice = Convert.ToInt32(choice);
+                switch (choice)
+                {
+                    case 0: Environment.Exit(0); break;
+                    case 1: StepOne(); break;
+                    case 2: StepTwo(); break;
+                    default: IsStepChoiceAnswer(); ; break;
+                }
+            }
+
+
+        }
 
 
         #region//Yardımcı methodlar
@@ -109,7 +138,7 @@ namespace MarsRover.Console
             if (readValue != null && readValue.Count == 2)
                 foreach (var readKey in readValue)
                 {
-                    if (RoverOperation.CharacterIsControl(Convert.ToChar(readKey), true))
+                    if (RoverOperation.IsCharacterCorrect(Convert.ToChar(readKey), true))
                     {
                         values.Add(Convert.ToInt32(readKey));
                     }

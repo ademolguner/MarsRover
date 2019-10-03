@@ -10,29 +10,29 @@ namespace MarsRover.Console.Abstract
    public  interface IRoverOperation
     {
         /// <summary>
-        /// hareket için girilen verilerin doğruluğunu yapıcaz
+        /// Hareket için girilen verilerin doğruluğunu yapacağız
         /// 2 adet int bir adet char
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        ReturnDataResult IstPositionValuesCorrect(List<string> values);
+        ReturnDataResult IsPositionValuesCorrect(List<string> values);
 
 
         /// <summary>
         /// girilen karakteri kontrol ediyoruz. Sayı veya metin kontrolü icin
-        /// durum bilgissi karsılastıma için
+        /// durum bilgisi karsılastımanda kullanacağız
         /// </summary>
         /// <param name="charValue"></param>
         /// <param name="controlStatus"></param>
         /// <returns></returns>
-        bool CharacterIsControl(char charValue, bool controlStatus);
+        bool IsCharacterCorrect(char charValue, bool controlStatus);
 
 
         /// <summary>
         /// Geziciden gelen islem  koda göre  hareket edilecektir,
         /// hareket için yapılacak işlem imzası
         /// </summary>
-        Entities.Rover Motion(Entities.Rover rover, List<int> maxBorderValues, string orientationValues);
+        Rover Motion(Rover rover, List<int> maxBorderValues, string orientationValues);
 
 
         /// <summary>
@@ -40,8 +40,7 @@ namespace MarsRover.Console.Abstract
         /// hareket etmeden önce  gridi aşıp aşmadığı kontrolü yapalım.
         /// </summary>
         /// <param name="maxBorderValues"></param>
-        /// <param name="rover"></param>
         /// <returns></returns>
-        void GridPointControl(List<int> maxBorderValues);
+        ReturnDataResult GridPointControl(List<int> maxBorderValues);
     }
 }

@@ -10,7 +10,7 @@ namespace MarsRover.Console.Manager
 {
     public class EnumOperation : IEnumOperation
     {
-        public T GetValueFromDescription<T>(string value)
+        public T GetEnumFromDescription<T>(string value) where T : Enum
         {
             var type = typeof(T);
             if (!type.IsEnum) throw new InvalidOperationException(message: $"Gönderilen (T) tipindeki nesne ENUM tipinde değildir. T bir enum tipinde object olmalıdır"); ;
@@ -27,18 +27,18 @@ namespace MarsRover.Console.Manager
                         return (T)field.GetValue(null);
                 }
             }
-            throw new InvalidOperationException(message: $"Girilen yön hatalı ! {value} tipinde bir yön bulunmamaktadır");
+            throw new InvalidOperationException(message: $"Girilen yön hatalı ! {value} tipinde bir yön bulunmamaktadır.");
         }
 
-        public int GetEnumItemCount<T>()
+        public int GetEnumItemsCount<T>()
         {
             var myEnumMemberCount = Enum.GetValues(typeof(T)).Length;
             return myEnumMemberCount;
         }
 
-        public string GetEnumDescription<T>(Enum value)
+        public string GetEnumDescription<T>(Enum item) where T : Enum
         {
-            return ((DescriptionAttribute) (value.GetType().GetMember(value.ToString())[0]
+            return ((DescriptionAttribute) (item.GetType().GetMember(item.ToString())[0]
                 .GetCustomAttributes(typeof(DescriptionAttribute), false).ElementAt(0))).Description;
         }
     }

@@ -13,30 +13,31 @@ namespace MarsRover.Console.Manager
 {
     public class RoverOperation : IRoverOperation
     {
+        private static readonly EnumOperation _enumOperation = new EnumOperation();
+        public static Rover _activeRover = new Rover();
 
-        static readonly EnumOperation EnumOperation = new EnumOperation();
-        static Entities.Rover _activeRover = new Entities.Rover();
 
-        public ReturnDataResult IstPositionValuesCorrect(List<string> values)
+
+
+        public ReturnDataResult IsPositionValuesCorrect(List<string> values)
         {
             ReturnDataResult data = new ReturnDataResult
             {
                 IsCorrect = true
             };
-            // 3 adet parametre olucak
             if (values.Count != 3)
             {
                 data.IsCorrect = false;
-                data.ReturnMessage = "Pozisyon için 3 ADET parametre girşi yapılmalıdır. X(int)-Y(int)-Z(text N-S-E-W)";
+                data.ReturnMessage = "Pozisyon için 3 ADET parametre girşi yapılmalıdır. X(int)-Y(int)-Z(text [ N-S-E-W] )";
                 return data;
             }
-            if (!CharacterIsControl(Convert.ToChar(values[0]), true))
+            if (!IsCharacterCorrect(Convert.ToChar(values[0]), true))
             {
                 data.IsCorrect = false;
                 data.ReturnMessage = "X Koordinatı için bir sayı giriniz";
                 return data;
             }
-            if (!CharacterIsControl(Convert.ToChar(values[1]), true))
+            if (!IsCharacterCorrect(Convert.ToChar(values[1]), true))
             {
                 data.IsCorrect = false;
                 data.ReturnMessage = "Y Koordinatı için bir sayı giriniz";
@@ -46,7 +47,7 @@ namespace MarsRover.Console.Manager
             return data;
         }
 
-        public bool CharacterIsControl(char charValue, bool controlStatus)
+        public bool IsCharacterCorrect(char charValue, bool controlStatus)
         {
             var data = char.IsNumber(charValue) == controlStatus ? true : false;
             return data;
@@ -57,57 +58,71 @@ namespace MarsRover.Console.Manager
             _activeRover = rover;
             foreach (var move in orientationValues)
             {
-                var rotateDestination = EnumOperation.GetValueFromDescription<Destination>(move.ToString());
+                var rotateDestination = _enumOperation.GetEnumFromDescription<Destination>(move.ToString());
                 if (rotateDestination == Rotate.Destination.Stable)
-                    StablePointNextGrid();
+                {  StablePointNextGrid();}
                 var activeRoverValue = (int)_activeRover.RoverDirection;
                 var rotatedDestinationValue = (int)rotateDestination;
                 RoverRotateMovement(activeRoverValue, rotatedDestinationValue);
 
-                GridPointControl(maxBorderValues);
+                var returnControl = GridPointControl(maxBorderValues);
+                if (!returnControl.IsCorrect)
+                {
+                    System.Console.WriteLine(returnControl.ReturnMessage);
+                    return null;
+                };
             }
 
             return rover;
         }
 
+
+
         private void RoverRotateMovement(int roverInfoValue, int rotateDestinationInfoValue)
         {
             var operationStepValue = (roverInfoValue) + (rotateDestinationInfoValue);
-            if (roverInfoValue == EnumOperation.GetEnumItemCount<Direction>() && rotateDestinationInfoValue > 0)
+            if (roverInfoValue == _enumOperation.GetEnumItemsCount<Direction>() && rotateDestinationInfoValue > 0)
             {
                 operationStepValue = 1;
             }
             if (operationStepValue == 0)
             {
-                operationStepValue = EnumOperation.GetEnumItemCount<Direction>();
+                operationStepValue = _enumOperation.GetEnumItemsCount<Direction>();
             }
             _activeRover.RoverDirection = (Direction)int.Parse(operationStepValue.ToString());
         }
 
-
-        public void GridPointControl(List<int> maxBorderValues)
+        public ReturnDataResult GridPointControl(List<int> maxBorderValues)
         {
-            if (
-                   _activeRover.PositionX < 0
-                || _activeRover.PositionX > maxBorderValues[0]
-                || _activeRover.PositionY < 0
-                || _activeRover.PositionY > maxBorderValues[1]
-               )
-                throw new Exception($"Durrrrr! Sınırları aşıyorsun :) (0 , 0) --  ({maxBorderValues[0]} , {maxBorderValues[1]})");
-        }
+            ReturnDataResult returnData = new ReturnDataResult
+            {
+                IsCorrect = true
+            };
 
+            if (_activeRover.PositionX < 0 || _activeRover.PositionX > maxBorderValues[0] || _activeRover.PositionY < 0 || _activeRover.PositionY > maxBorderValues[1])
+            {
+                returnData.IsCorrect = false;
+                returnData.ReturnMessage =
+                    $"Durrrrr! Sınırları aşıyorsun " +
+                    $":Max Boyutlar  ({maxBorderValues[0]} , {maxBorderValues[1]}) , " +
+                    $"aktif konum bilginiz ({_activeRover.PositionX.ToString()}, {_activeRover.PositionY.ToString()} - {_activeRover.RoverDirection.ToString()})";
+            }
+            return returnData;
+        }
 
         private static void StablePointNextGrid()
         {
-            var direction = EnumOperation.GetValueFromDescription<Direction>(_activeRover.RoverDirection.ToString().Substring(0, 1));
+            // North ve South boylam olduğu için Y eksenini  (+ -) değişir
+            // East  ve West  enlem  olduğu için X ekseninde  (+ -) değişir.
+            var direction = _enumOperation.GetEnumFromDescription<Direction>(_activeRover.RoverDirection.ToString().Substring(0, 1));
             if (direction == Direction.North)
-                _activeRover.PositionY += 1;
+            { _activeRover.PositionY += 1;}
             if (direction == Direction.South)
-                _activeRover.PositionY -= 1;
+            { _activeRover.PositionY -= 1;}
             if (direction == Direction.East)
-                _activeRover.PositionX += 1;
+            {  _activeRover.PositionX += 1;}
             if (direction == Direction.West)
-                _activeRover.PositionX -= 1;
+            {  _activeRover.PositionX -= 1;}
         }
 
     }

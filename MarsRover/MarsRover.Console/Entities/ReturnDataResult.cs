@@ -10,5 +10,6 @@ namespace MarsRover.Console.Entities
     {
         public bool IsCorrect { get; set; }
         public string ReturnMessage { get; set; }
+
     }
 }
