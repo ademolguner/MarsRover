@@ -15,7 +15,7 @@ namespace MarsRover.Console.Entities
         public Direction RoverDirection { get; set; }
 
         /// <summary>
-        /// constructor da  propertilere default değerler atıyoruz
+        /// We assign default values ​​to properties in constructor
         /// </summary>
         public Rover()
         {

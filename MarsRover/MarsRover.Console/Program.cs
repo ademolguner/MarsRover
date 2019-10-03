@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using MarsRover.Console.Const;
 using MarsRover.Console.Entities;
 using MarsRover.Console.Manager;
@@ -26,33 +23,34 @@ namespace MarsRover.Console
             StepOne();
         }
 
-        #region//İşlem adımları
+        #region Process steps
         public static void StepOne()
         {
             System.Console.WriteLine();
-            System.Console.WriteLine($"Max position degerlerini girin X-Y");
+            System.Console.WriteLine($"Enter MAX position X-Y");
             var maxDigits = GetMaxPositionRead();
             if (maxDigits.Count == 2)
             {  _positionMaxValues = maxDigits; StepTwo();}
             StepOne();
         }
-        private static void StepTwo()
+
+        public static void StepTwo()
         {
             System.Console.WriteLine();
-            System.Console.WriteLine($"Lütfen hareket değerlerini girin X-Y-Z");
+            System.Console.WriteLine($"Please enter transaction values X-Y-Z");
             var stepValues = GetRetrieveEnteredData();
             if (stepValues.Count == 3)
             {    _positionValues = stepValues; StepThree(stepValues);}
             StepTwo();
         }
-        private static void StepThree(List<string> temporyPositionValues)
+        private static void StepThree(List<string> temporaryPositionValues)
         {
-            var positionRetunValu = RoverOperation.IsPositionValuesCorrect(temporyPositionValues);
-            if (positionRetunValu.IsCorrect)
+            var positionReturnValue = RoverOperation.IsPositionValuesCorrect(temporaryPositionValues);
+            if (positionReturnValue.IsCorrect)
             {
-                // yön için pozition kontrolü yapıcaz enum
                 try
                 {
+                    //Direction for position control
                     var rotateValue = EnumOperation.GetEnumFromDescription<Compass.Direction>(_positionValues[2]);
                     Rover.RoverDirection = rotateValue;
                     Rover.PositionX = Convert.ToInt32(_positionValues[0]);
@@ -62,22 +60,21 @@ namespace MarsRover.Console
                 catch (InvalidOperationException)
                 {
                     System.Console.WriteLine();
-                    System.Console.WriteLine($"Girilen yön hatalı !  {_positionValues[2].ToString() } tipinde bir yön bulunmamaktadır. ");
+                    System.Console.WriteLine($"Incorrect direction entered ! There is no {_positionValues[2].ToString() } type direction. ");
                     StepTwo();
                 }
             }
             else
             {
                 System.Console.WriteLine();
-                System.Console.WriteLine(positionRetunValu.ReturnMessage);
+                System.Console.WriteLine(positionReturnValue.ReturnMessage);
                 StepTwo();
             }
         }
         private static void StepFour()
         {
-            // hareket bilgisi girin
             System.Console.WriteLine();
-            System.Console.WriteLine($"Lütfen hareket bilgisi girin  (L,R,M) kombinayyonları ile boşluksuz yazınız.");
+            System.Console.WriteLine($"Please enter transaction values,  Write without spaces with (L,R,M) combinations.");
             var orientationValues = System.Console.ReadLine()?.Trim(' ').ToUpper();
 
             try
@@ -91,19 +88,17 @@ namespace MarsRover.Console
                 else
                 {
                     System.Console.WriteLine();
-                    System.Console.WriteLine($"Rover is last Position X-Y-Z :" +
+                    System.Console.WriteLine($"Rover's last position X-Y-Z :" +
                                              $"{lastRoverValues.PositionX.ToString()}-" +
                                              $"{lastRoverValues.PositionY.ToString()}-" +
                                              $"{EnumOperation.GetEnumDescription<Direction>(lastRoverValues.RoverDirection)}");
-                    //  işlem basarı ile bitince soruyoruz?
                     IsStepChoiceAnswer();
                 }
-                //StepTwo();
             }
             catch (Exception)
             {
                 System.Console.WriteLine();
-                System.Console.WriteLine($"Hatalı giriş ");
+                System.Console.WriteLine($"Incorrect entry ! ");
                 StepFour();
             }
         }
@@ -112,7 +107,7 @@ namespace MarsRover.Console
 
         public static void IsStepChoiceAnswer()
         {
-            System.Console.WriteLine($"Max boyutu değiştirmek için 1, yeni konum bilgisi girmek için 2 ye çıkmak için 0 ı tuşlayınız :)");
+            System.Console.WriteLine($"For Max to change size 1, for new location information 2 ye for exit 0  press :)");
             dynamic choice = System.Console.ReadLine()?.Trim(' ').ToUpper();
             if (RoverOperation.IsCharacterCorrect(Convert.ToChar(choice), true))
             {

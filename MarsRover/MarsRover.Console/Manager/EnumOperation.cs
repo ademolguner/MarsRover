@@ -10,10 +10,11 @@ namespace MarsRover.Console.Manager
 {
     public class EnumOperation : IEnumOperation
     {
-        public T GetEnumFromDescription<T>(string value) where T : Enum
+        public T GetEnumFromDescription<T>(string value) where T : Enum   // type safety
         {
             var type = typeof(T);
-            if (!type.IsEnum) throw new InvalidOperationException(message: $"Gönderilen (T) tipindeki nesne ENUM tipinde değildir. T bir enum tipinde object olmalıdır"); ;
+            // This control can collect with T condition where you already can afford, but, added to check for availability
+            if (!type.IsEnum) throw new InvalidOperationException(message: $"The object of type (T) sent is not of ENUM type. T must be an enum type object"); ;
             foreach (var field in type.GetFields())
             {
                 if (Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) is DescriptionAttribute attribute)
@@ -27,7 +28,7 @@ namespace MarsRover.Console.Manager
                         return (T)field.GetValue(null);
                 }
             }
-            throw new InvalidOperationException(message: $"Girilen yön hatalı ! {value} tipinde bir yön bulunmamaktadır.");
+            throw new InvalidOperationException(message: $"Incorrect direction entered !  no type {value} direction.");
         }
 
         public int GetEnumItemsCount<T>()

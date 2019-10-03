@@ -13,8 +13,8 @@ namespace MarsRover.Console.Manager
 {
     public class RoverOperation : IRoverOperation
     {
-        private static readonly EnumOperation _enumOperation = new EnumOperation();
-        public static Rover _activeRover = new Rover();
+        private static  EnumOperation _enumOperation = new EnumOperation();
+        private static  Rover _activeRover = new Rover();
 
 
 
@@ -28,19 +28,19 @@ namespace MarsRover.Console.Manager
             if (values.Count != 3)
             {
                 data.IsCorrect = false;
-                data.ReturnMessage = "Pozisyon için 3 ADET parametre girşi yapılmalıdır. X(int)-Y(int)-Z(text [ N-S-E-W] )";
+                data.ReturnMessage = "Three parameter entries for the position. X(int)-Y(int)-Z(text [ N-S-E-W] )";
                 return data;
             }
             if (!IsCharacterCorrect(Convert.ToChar(values[0]), true))
             {
                 data.IsCorrect = false;
-                data.ReturnMessage = "X Koordinatı için bir sayı giriniz";
+                data.ReturnMessage = "Enter a number for X Coordinate";
                 return data;
             }
             if (!IsCharacterCorrect(Convert.ToChar(values[1]), true))
             {
                 data.IsCorrect = false;
-                data.ReturnMessage = "Y Koordinatı için bir sayı giriniz";
+                data.ReturnMessage = "Enter a number for Y Coordinate";
                 return data;
             }
 
@@ -103,17 +103,17 @@ namespace MarsRover.Console.Manager
             {
                 returnData.IsCorrect = false;
                 returnData.ReturnMessage =
-                    $"Durrrrr! Sınırları aşıyorsun " +
-                    $":Max Boyutlar  ({maxBorderValues[0]} , {maxBorderValues[1]}) , " +
-                    $"aktif konum bilginiz ({_activeRover.PositionX.ToString()}, {_activeRover.PositionY.ToString()} - {_activeRover.RoverDirection.ToString()})";
+                    $"Stop! You're out of border " +
+                    $":Max border values  ({maxBorderValues[0]} , {maxBorderValues[1]}) , " +
+                    $" your active location  ({_activeRover.PositionX.ToString()}, {_activeRover.PositionY.ToString()} - {_activeRover.RoverDirection.ToString()})";
             }
             return returnData;
         }
 
         private static void StablePointNextGrid()
         {
-            // North ve South boylam olduğu için Y eksenini  (+ -) değişir
-            // East  ve West  enlem  olduğu için X ekseninde  (+ -) değişir.
+            // North and South is the longitude for the Y axis  (+ -) change
+            // East  and West  is the latitude  for the X axis  (+ -) change.
             var direction = _enumOperation.GetEnumFromDescription<Direction>(_activeRover.RoverDirection.ToString().Substring(0, 1));
             if (direction == Direction.North)
             { _activeRover.PositionY += 1;}
